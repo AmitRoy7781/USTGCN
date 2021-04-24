@@ -24,6 +24,8 @@ Unified Spatio-Temporal Graph Convolutional Network, USTGCN. The unified spatio-
 # Model Architecture
 ![USTGCN Model](USTGCN_model.png?raw=true "Title")
 
+To learn both daily and current-day traffic pattern, for each node we stack the traffic speeds of the last seven days  (traffic pattern during 09:30 AM - 10:30 AM for the last  week depicted with green color) along with the current-day traffic pattern for the past hour (traffic speed during 9:05 AM - 10:00 AM on current day i.e. Tuesrday depicted with red color) into the corresponding feature vector. We feed the feature matrix stacked for **N** nodes in the traffic network across **T = 12** timestamps to the USTGCN model of **K** convolution layers to compute spatio-temporal embedding. Finally, the regression module predicts future traffic intensities by utilizing the spatio-temporal embeddings.
+
 # Comarison with Baselines
 ![Baseline Model](baseline_comparison.png?raw=true "Title")
 
