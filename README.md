@@ -10,6 +10,23 @@
 This is a pytorch implementation of "Unified Spatio-Temporal Modeling for Traffic Forecasting using Graph Neural Network"
 which has been accepted by IJCNN 2021.
 
+# Abstract
+Research in deep learning models to forecast traffic intensities has gained great attention in recent years due to their capability to capture the complex spatio-temporal relationships within the traffic data. However, most state-of-the-art approaches have designed spatial-only (e.g. Graph Neural Networks) and temporal-only (e.g. Recurrent Neural Networks) modules to separately extract spatial and temporal features. However, we argue that it is less effective to extract the complex spatio-temporal relationship with such factorized modules. Besides, most existing works predict the traffic intensity of a particular time interval only based on the traffic data of the previous one hour of that day. And thereby ignores the repetitive daily/weekly pattern that may exist in the last hour of data. Therefore, we propose a Unified Spatio-Temporal Graph Convolution Network (USTGCN) for traffic forecasting that performs both spatial and temporal aggregation through direct information propagation across different timestamp nodes with the help of spectral graph convolution on a spatio-temporal graph. Furthermore, it captures historical daily patterns in previous days and current-day patterns in current-day traffic data. Finally, we validate our work's effectiveness through experimental analysis, which shows that our model USTGCN can outperform state-of-the-art performances in three popular benchmark datasets from the Performance Measurement System (PeMS). Moreover, the training time is reduced significantly with our proposed USTGCN model.
+
+# Motivation
+![Motivation Figure](motivation_figure.png?raw=true "Title")
+Factorized Spatial-only and Temporal-only Aggregation (Left) vs. Unified Spatio-Temporal Aggregation (Right). For a target node in a physical traffic network state-of-the-art approaches capture spatial information from neighbor nodes in each timestamps and aggregate the information for the corresponding node at different timestamps. In contrary, capturing the traffic information for a target node from both spatial and temporal component in a unified manner can learn the inter-relationsip from neighbor nodes at different timestamps more comprehensively.
+
+# USTGCN 
+![USTGCN](USTGCN.png?raw=true "Title")
+Unified Spatio-Temporal Graph Convolutional Network, USTGCN. The unified spatio-temporal adjacency matrix, ${A_{ST}}$ showcases the cross space-time connections among nodes from different timestamps which consists of three types of submatrix: $\textbf{A}$ as diagonal submatrix, $\textbf{\tilde{A}}$ as lower submatrix and $\textbf{0}$ as upper submatrix. ${A_{ST}}$, a lower triangular matrix, facilitates traffic feature propagation from neighboring nodes only from the previous timestamps. The input features of different timestamps at convolution layer ${l}$ are stacked into ${X^{l}_{self}}$ which is element-wise multiplied with broadcasted temporal weight parameter ${W^{l}_{Temp}}$ indicating the importance of the feature at the different timestamp. Afterwards, graph convolution is performed followed by weighted combination of self representation, ${X^{l}_{self}}$ and spatio-temporal aggregated vector, ${X^{l}_{ST}}$  to compute the representation ${X^{l+1}_{self}}$ that is used as input features at next layer, ${l+1}$ or fed into the regression task.
+
+# Model Architecture
+![USTGCN Model](USTGCN_model.png?raw=true "Title")
+
+# Comarison with Baselines
+![Baseline Model](baseline_comparison.png?raw=true "Title")
+
 # Envirnoment Set-Up 
 
 Clone the git project:
