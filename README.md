@@ -7,7 +7,7 @@
 - [M Ashraful Amin](http://www.cse.iub.edu.bd/faculties/25) 
 - [A K M Mahbubur Rahman](http://www.cse.iub.edu.bd/faculties/56)
 
-This is a pytorch implementation of "Unified Spatio-Temporal Modeling for Traffic Forecasting using Graph Neural Network"
+This is a pytorch implementation of our [paper](https://arxiv.org/abs/2104.12518) "Unified Spatio-Temporal Modeling for Traffic Forecasting using Graph Neural Network"
 which has been accepted by IJCNN 2021.
 
 # Abstract
