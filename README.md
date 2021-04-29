@@ -75,4 +75,12 @@ Please download the trained USTGCN models from [Google drive]() and place it in 
 ```
 $ python3 USTGCN.py --cuda --dataset PeMSD7  --pred_len 3 --trained_model
 ```
+
+**Run Trained Model:**
+
+Please download the trained SSTGNN models from [Google drive]() and place them in `PeMSD7` folder
+
+```
+$ python3 sst_gnn.py --cuda --dataset PeMSD7  --pred_len 3 --trained_model
+```
  -->
