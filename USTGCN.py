@@ -147,10 +147,10 @@ class DataCenter(object):
 
 """
 
-def evaluate(test_nodes,raw_features,labels, graphSage, regression, device,test_loss):
+def evaluate(test_nodes,raw_features,labels, USTGCN, regression, device,test_loss):
 
 
-    models = [graphSage, regression]
+    models = [USTGCN, regression]
 
     params = []
     for model in models:
@@ -161,7 +161,7 @@ def evaluate(test_nodes,raw_features,labels, graphSage, regression, device,test_
 
     
     val_nodes = test_nodes
-    embs = graphSage(raw_features,False)
+    embs = USTGCN(raw_features,False)
     predicts = regression(embs)
     loss_sup = torch.nn.MSELoss()(predicts, labels)
     loss_sup /= len(val_nodes)
@@ -365,8 +365,6 @@ class TrafficModel:
         test_loss = torch.tensor(0.).to(self.device)
         for data_timestamp in idx:
 
-          
-
           #test_label
           raw_features = self.test_data[data_timestamp]
           test_label = self.test_label[data_timestamp]
@@ -420,8 +418,8 @@ class TrafficModel:
     
     def run_Trained_Model(self):
       pred_after = self.pred_len * 5
-      timeStampModel = torch.load(self.PATH + "/saved_model/" + self.ds +  "/bestTmodel_" + str(pred_after) +"minutes.pth")
-      regression = torch.load(self.PATH + "/saved_model/" + self.ds +  "/bestRegression_" + str(pred_after) +"minutes.pth")
+      timeStampModel = torch.load(self.PATH + "/" + self.ds +  "/bestTmodel_" + str(pred_after) +"minutes.pth")
+      regression = torch.load(self.PATH + "/" + self.ds +  "/bestRegression_" + str(pred_after) +"minutes.pth")
       pred = []
       label = []
       tot_timestamp = len(self.test_data)
@@ -429,19 +427,16 @@ class TrafficModel:
       test_loss = torch.tensor(0.).to(self.device)
       for data_timestamp in idx:
 
-        #window slide
-        timeStampModel.st = data_timestamp
+          #test_label
+          raw_features = self.test_data[data_timestamp]
+          test_label = self.test_label[data_timestamp]
+          
+          #evaluate
+          temp_predicts,test_loss = evaluate(self.all_nodes,raw_features,test_label,
+            timeStampModel, regression, self.device,test_loss)
 
-        #test_label
-        raw_features = self.test_data[timeStampModel.st+self.num_timestamps-1]
-        test_label = raw_features[:,self.day:]
-        
-        #evaluate
-        temp_predicts,test_loss = evaluate(self.all_nodes,test_label, timeStampModel, regression, 
-                self.device,test_loss)
-
-        label = label + test_label.detach().tolist()
-        pred = pred + temp_predicts.detach().tolist()
+          label = label + test_label.detach().tolist()
+          pred = pred + temp_predicts.detach().tolist()
 
       
       test_loss /= len(idx)
@@ -513,9 +508,9 @@ class CombinedGNN(nn.Module):
         A = self.adj_lists
         dim = self.num_timestamps*self.tot_nodes
 
-        A_temporal = torch.zeros(dim,dim)
-        D_temporal = torch.zeros(dim,dim)
-        identity = torch.eye(self.tot_nodes)
+        A_temporal = torch.zeros(dim,dim).to(device)
+        D_temporal = torch.zeros(dim,dim).to(device)
+        identity = torch.eye(self.tot_nodes).to(device)
 
         for i in range(0, self.num_timestamps):
           for j in range(0, i+1):
@@ -577,7 +572,7 @@ class CombinedGNN(nn.Module):
       his_final_embds = torch.cat(his_list,dim=1)
 
 
-      final_embds = his_final_embds]
+      final_embds = his_final_embds
       final_embds = F.relu(self.final_weight.mm(final_embds.t()).t())
 
 
@@ -661,52 +656,49 @@ parser.add_argument('--input_size', type=int, default=8)
 args = parser.parse_args()
 
 
-if torch.cuda.is_available():
-	if not args.cuda:
-		print("WARNING: You have a CUDA device, so you should run with --cuda")
-	else:
-		device_id = torch.cuda.current_device()
-		print('using device', device_id, torch.cuda.get_device_name(device_id))
 
-device = torch.device("cuda" if args.cuda else "cpu")
+
+
+device = torch.device("cuda:0" if args.cuda and torch.cuda.is_available() else "cpu")
 print('DEVICE:', device)
 
  
-if __name__ == '__main__':
-
-    print('Traffic Forecasting GNN with Historical and Current Model')
-
-    #set user given seed to every random generator
-    random.seed(args.seed)
-    np.random.seed(args.seed)
-    torch.manual_seed(args.seed)
-    torch.cuda.manual_seed_all(args.seed)
-
-    PATH = os.getcwd() + "/"
-    config_file = PATH + "experiments.conf"
- 
-    config = pyhocon.ConfigFactory.parse_file(config_file)
-    ds = args.dataset
-    pred_len = args.pred_len
-    data_loader = DataLoader(config,ds,pred_len)
-    train_data,train_label,test_data,test_label,adj = data_loader.load_data()
-
-    num_timestamps = args.num_timestamps
-    GNN_layers = args.GNN_layers
-    input_size = args.input_size
-    out_size = args.input_size
-    epochs = args.epochs
-
 """# Main Function"""
 
-save_flag = False
+print('Traffic Forecasting GNN with Historical and Current Model')
+
+#set user given seed to every random generator
+random.seed(args.seed)
+np.random.seed(args.seed)
+torch.manual_seed(args.seed)
+torch.cuda.manual_seed_all(args.seed)
+
+PATH = os.getcwd() + "/"
+config_file = PATH + "experiments.conf"
+
+config = pyhocon.ConfigFactory.parse_file(config_file)
+ds = args.dataset
+pred_len = args.pred_len
+data_loader = DataLoader(config,ds,pred_len)
+train_data,train_label,test_data,test_label,adj = data_loader.load_data()
+
+num_timestamps = args.num_timestamps
+GNN_layers = args.GNN_layers
+input_size = args.input_size
+out_size = args.input_size
+epochs = args.epochs
+
+
+save_flag = args.save_model
 t_debug = False
 b_debug = False
 hModel = TrafficModel(train_data,train_label,test_data,test_label,adj,config, ds, input_size, 
                        out_size,GNN_layers,epochs, device,num_timestamps,pred_len,save_flag,
                        PATH,t_debug,b_debug)
 
+
 if not args.trained_model: #train model and evaluate
+  print("Running Trained Model...")
   hModel.run_model()
 else:
   print("Running Trained Model...")
