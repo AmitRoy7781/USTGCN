@@ -14,11 +14,13 @@ This is a pytorch implementation of our [paper](https://arxiv.org/abs/2104.12518
 Please cite our paper:
 
 ```
-@article{roy2021unified,
-  title={Unified Spatio-Temporal Modeling for Traffic Forecasting using Graph Neural Network},
-  author={Roy, Amit and Roy, Kashob Kumar and Ali, Amin Ahsan and Amin, M Ashraful and Rahman, AKM},
-  journal={arXiv preprint arXiv:2104.12518},
-  year={2021}
+@inproceedings{roy2021unified,
+  title={Unified spatio-temporal modeling for traffic forecasting using graph neural network},
+  author={Roy, Amit and Roy, Kashob Kumar and Ali, Amin Ahsan and Amin, M Ashraful and Rahman, AKM Mahbubur},
+  booktitle={2021 International Joint Conference on Neural Networks (IJCNN)},
+  pages={1--8},
+  year={2021},
+  organization={IEEE}
 }
 ```
 
