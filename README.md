@@ -11,9 +11,9 @@ This is a pytorch implementation of our [paper](https://arxiv.org/abs/2104.12518
 
 ## Citation
 
-Please cite our paper:
+If you find our paper or repo useful then please cite our paper:
 
-```
+```bibtex
 @inproceedings{roy2021unified,
   title={Unified spatio-temporal modeling for traffic forecasting using graph neural network},
   author={Roy, Amit and Roy, Kashob Kumar and Ali, Amin Ahsan and Amin, M Ashraful and Rahman, AKM Mahbubur},
