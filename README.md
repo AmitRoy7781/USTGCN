@@ -84,6 +84,7 @@ Please download the trained SSTGNN models from [Google drive]() and place them i
 ```
 $ python3 USTGCN.py --cuda --dataset PeMSD7 --pred_len 3 --trained_model
 ```
+!-->
  
 ## Cite
 
