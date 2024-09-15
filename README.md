@@ -101,3 +101,7 @@ If you find our paper or repo useful then please cite our paper:
 }
 ```
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=amitroy7781/ustgcn&type=Date)](https://star-history.com/#amitroy7781/ustgcn&Date)
+
